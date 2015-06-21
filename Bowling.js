@@ -1,0 +1,103 @@
+var statusAfterHit = {
+	usual : 0,
+	strike : 1,
+	spare : 2
+};
+
+var GameStatus = {	
+	totalBalls : 10,
+	throwsLeft : 10,
+	totalPoints : 0,
+	throwNumber : 1,
+	statusAfterHit :0
+
+};
+
+
+var throwBall = function(){
+	var ballsHit,
+		ballsHitSequence = [0,0],
+		ballsLeft
+		i = 0;
+
+	ballsHit = throwBallFirstTime();
+	ballsHitSequence[i] = ballsHit;
+	if(ballsHit!==GameStatus.totalBalls && GameStatus.throwsLeft !== 0){
+		ballsHit = throwBallSecondTime(ballsHit);
+		ballsHitSequence[++i] = ballsHit;
+	}
+	countPoints(ballsHitSequence);
+	GameStatus.throwsLeft--;
+	return ballsHitSequence;
+};
+
+var throwBallFirstTime = function(){
+	var ballsHit = Math.floor(Math.random() * (GameStatus.totalBalls+1))+0;
+	return ballsHit;
+};
+
+var throwBallSecondTime = function(ballsHit){
+	var ballsLeft;
+	ballsLeft = GameStatus.totalBalls - ballsHit,
+	this.ballsHit = Math.floor(Math.random() * (ballsLeft+1))+0;
+	GameStatus.throwNumber = 2;
+	return ballsLeft;
+};
+
+
+var throwLastBall = function(){
+	var ballsHit = throwBall();
+	if(GameStatus.statusAfterHit===statusAfterHit.spare || GameStatus.statusAfterHit === statusAfterHit.strike){
+		ballsHit = throwBall();
+	}
+};
+
+var countPoints = function(ballsHitSequence){
+	console.log("Balls in the first hit: "+ballsHitSequence[0]);
+	console.log("Balls hit in the second hit: "+ballsHitSequence[1]);
+	var ballsHit = ballsHitSequence[0] + ballsHitSequence[1];
+	var pointsEarned = doublePoints(ballsHitSequence);
+	if(GameStatus.throwNumber===1 && ballsHit === GameStatus.totalBalls ){
+		console.log("Strike");
+		GameStatus.totalPoints += pointsEarned;
+		GameStatus.statusAfterHit = statusAfterHit.strike;
+	} else if(GameStatus.throwNumber===2 && ballsHit === GameStatus.totalBalls){
+		console.log("Spare");
+		GameStatus.totalPoints += pointsEarned;
+		GameStatus.statusAfterHit = statusAfterHit.spare;
+	}else{
+		console.log("Total points for the move " + pointsEarned)
+		GameStatus.totalPoints += pointsEarned;
+		GameStatus.statusAfterHit = statusAfterHit.usual;
+	}
+};
+
+var doublePoints = function(ballsHitSequence){
+	var pointsEarned;
+	if(GameStatus.statusAfterHit === statusAfterHit.strike){
+		pointsEarned = (ballsHitSequence[0] + ballsHitSequence[1])*2;
+	}else if(GameStatus.statusAfterHit === statusAfterHit.spare){
+		pointsEarned = ballsHitSequence[0]*2 + ballsHitSequence[1];
+	}else{
+		pointsEarned = ballsHitSequence[0]+ballsHitSequence[1];
+	}
+	return pointsEarned;
+};
+
+
+var playBowling = function(){
+	for(var i=1; i<10; i++){
+		console.log("Hit "+i);
+		var pointsEarnedInLap;
+		pointsEarnedInLap = throwBall();
+		console.log("TotalPoints: "+GameStatus.totalPoints);
+		console.log("Status after hit: "+GameStatus.statusAfterHit);
+		console.log("");
+
+	}
+	console.log("Hit: "+GameStatus.totalBalls);
+	throwLastBall();
+	console.log("Status after hit: "+GameStatus.statusAfterHit);
+	console.log("TotalPoints: "+GameStatus.totalPoints);
+};
+playBowling();
